@@ -1,0 +1,301 @@
+<title>Parcial Segundo Corte u1202076</title>
+    <style>
+      html, body { margin: 0; padding: 0; overflow: hidden; }
+			button{
+			  background:#1AAB8A;
+			  color:#fff;
+			  border:none;
+			  position:absolute;
+			  height:5%;
+			  width:15%;
+			  font-size: 1em;
+			  padding:0 2em;
+			  cursor:pointer;
+			  transition:800ms ease all;
+			  outline:none;
+			}
+			button:hover{
+			  background:#ddd;
+			  color:#1AAB8A;
+			}
+			button:hover:before,button:hover:after{
+			  width:100%;
+			  transition:800ms ease all;
+			}
+    </style>
+  </head>
+  <body>
+    <script src="js/three.js"></script>
+	<script src="js/controls/OrbitControls.js"></script>
+	<script src="js/csg.js"></script>
+	<script src="js/THREE.CSG.js"></script>
+		</div>
+		<div id="my-div">
+			<!--canvas id='canvas' width='500px' height='500px'></canvas-->
+			<button id='button' style="left:25%; top:75%" onClick="Voxel()">VOXEL</button> 
+			<button id='button' style="left:75%; top:75%" onClick="Peon()">Peon</button> 
+		</div>
+
+		<script src="js/three.js"></script>
+
+		<script src="js/libs/inflate.min.js"></script>
+		<script src="js/loaders/FBXLoader.js"></script>
+
+		<script src="js/controls/OrbitControls.js"></script>
+
+		<script src="js/Detector.js"></script>
+		<script src="js/libs/stats.min.js"></script>
+    <script>
+			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+
+			var container, stats, controls, div;
+			var camera, scene, renderer, light;
+
+			var clock = new THREE.Clock();
+
+			var mixers = [];
+			
+			var action;
+
+			var camera, scene, renderer;
+			var plane;
+			var mouse, raycaster, isShiftDown = false;
+
+			var rollOverMesh, rollOverMaterial;
+			var cubeGeo, cubeMaterial;
+
+			var objects = [];
+
+			init();
+			render();
+			animate();
+
+			function init() {
+
+				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 10000 );
+				camera.position.set( 500, 800, 1300 );
+				camera.lookAt( 0, 0, 0 );
+
+				scene = new THREE.Scene();
+				scene.background = new THREE.Color( 0xf0f0f0 );
+
+		                var rollOverGeo = new THREE.BoxBufferGeometry( 50, 50, 50 );
+				rollOverMaterial = new THREE.MeshBasicMaterial( { color: 0xFFFFFF, opacity: 0.5, transparent: true } );
+				rollOverMesh = new THREE.Mesh( rollOverGeo, rollOverMaterial );
+				scene.add( rollOverMesh );
+				cubeGeo = new THREE.BoxBufferGeometry( 50, 50, 50 );
+
+				// grid
+
+				var gridHelper = new THREE.GridHelper( 1000, 20 );
+				scene.add( gridHelper );
+
+				//
+
+				raycaster = new THREE.Raycaster();
+				mouse = new THREE.Vector2();
+
+				var geometry = new THREE.PlaneBufferGeometry( 1000, 1000 );
+				geometry.rotateX( - Math.PI / 2 );
+
+				plane = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial( { visible: false } ) );
+				scene.add( plane );
+
+				objects.push( plane );
+
+				// lights
+
+                                var ambient = new THREE.AmbientLight( 0xffffff, 2 );
+                                scene.add( ambient );
+			
+                                 var pointLight = new THREE.PointLight( 0xffffff, 1, 100 );
+                                 pointLight.position.set( -5, 1, 5 );
+                                 scene.add( pointLight );
+			
+                                 var pointLight = new THREE.PointLight( 0xffffff, .5, 100 );
+                                 pointLight.position.set( 5, 1, -5 );
+                                 scene.add( pointLight );
+
+				renderer = new THREE.WebGLRenderer( { antialias: true } );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				document.body.appendChild( renderer.domElement );
+
+				document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+				document.addEventListener( 'mousedown', onDocumentMouseDown, false );
+				document.addEventListener( 'keydown', onDocumentKeyDown, false );
+				document.addEventListener( 'keyup', onDocumentKeyUp, false );
+				//
+
+				window.addEventListener( 'resize', onWindowResize, false );
+
+			}
+
+                        //PEON
+			var SphereGeometry = new THREE.SphereGeometry( .3, 32, 32 );
+                        var TorusGeometry = new THREE.TorusGeometry( .1, 0.08, 0.5, 20 );
+                        var TorusGeometry1 = new THREE.TorusGeometry( .3, 0.08, 0.4, 20 );
+                        var TorusGeometry2 = new THREE.TorusGeometry( .4, 0.08, 0.8, 20 );
+                        var TorusGeometry3 = new THREE.TorusGeometry( .4, 0.08, 0.4, 20 );
+                        var CylinderGeometry = new THREE.CylinderGeometry( 0.1,0.2,0.2,40);
+                        var CylinderGeometry1 = new THREE.CylinderGeometry( 0.1,0.4,1.5,40);
+
+ 			var material = new THREE.MeshStandardMaterial( { color: 0x81F7BE, metalness: 0.5, roughness: 0.1 } );
+                       
+			var Sphere = new THREE.Mesh( SphereGeometry, material);
+                        Sphere.translateY(2);
+			var Torus = new THREE.Mesh( TorusGeometry, material);
+                        Torus.rotateX(55);
+                        Torus.translateZ(1.7);
+                        Torus.translateY(0.05);
+			var Torus1 = new THREE.Mesh( TorusGeometry1, material);
+                        Torus1.rotateX(55);
+                        Torus1.translateZ(0.4);
+			var Torus2 = new THREE.Mesh( TorusGeometry2, material);
+                        Torus2.rotateX(55);
+                        Torus2.translateZ(0.3);
+			var Torus3 = new THREE.Mesh( TorusGeometry3, material);
+                        Torus3.rotateX(55);
+                        Torus3.translateZ(0.1);
+			var Cylinder = new THREE.Mesh( CylinderGeometry, material);
+                        Cylinder.translateY(1.6);
+			var Cylinder1 = new THREE.Mesh( CylinderGeometry1, material);
+                        Cylinder1.translateY(0.8);
+
+                        //CONVERTIR A CSG
+			var SphereCSG = THREE.CSG.fromMesh( Sphere );
+			var TorusCSG = THREE.CSG.fromMesh( Torus );
+			var Torus1CSG = THREE.CSG.fromMesh( Torus1 );
+			var Torus2CSG = THREE.CSG.fromMesh( Torus2 );
+			var Torus3CSG = THREE.CSG.fromMesh( Torus3 );
+			var Torus3CSG = THREE.CSG.fromMesh( Torus3 );
+			var CylinderCSG = THREE.CSG.fromMesh( Cylinder );
+			var Cylinder1CSG = THREE.CSG.fromMesh( Cylinder1 );
+
+                        //APLICAR LAS OPERACIONES
+			var Result = SphereCSG.union( TorusCSG ).union(CylinderCSG).union(Torus1CSG).union(Torus2CSG).union(Torus3CSG).union(Cylinder1CSG); 
+                        
+                        //CONVERTIR A THREE
+			var Peon = THREE.CSG.toMesh( Result );
+                        Peon.material = material1;
+                        //Peon.translateX(2);
+			function onWindowResize() {
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+			}
+
+			function onDocumentMouseMove( event ) {
+
+				event.preventDefault();
+
+				mouse.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1 );
+
+				raycaster.setFromCamera( mouse, camera );
+
+				var intersects = raycaster.intersectObjects( objects );
+
+				if ( intersects.length > 0 ) {
+
+					var intersect = intersects[ 0 ];
+
+					rollOverMesh.position.copy( intersect.point ).add( intersect.face.normal );
+					rollOverMesh.position.divideScalar( 50 ).floor().multiplyScalar( 50 ).addScalar( 25 );
+
+				}
+
+				render();
+
+			}
+
+			function onDocumentMouseDown( event ) {
+
+				event.preventDefault();
+
+				mouse.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1 );
+
+				raycaster.setFromCamera( mouse, camera );
+
+				var intersects = raycaster.intersectObjects( objects );
+
+				if ( intersects.length > 0 ) {
+
+					var intersect = intersects[ 0 ];
+
+					// delete cube
+
+					if ( isShiftDown ) {
+
+						if ( intersect.object !== plane ) {
+
+							scene.remove( intersect.object );
+
+							objects.splice( objects.indexOf( intersect.object ), 1 );
+
+						}
+
+						// create cube
+
+					} else { 
+                                                //var material1 = new THREE.MeshStandardMaterial( { color: 0xF7D358, metalness: 0.5, roughness: 0.1 } );
+                        //APLICAR LAS OPERACIONES
+			var Result = SphereCSG.union( TorusCSG ).union(CylinderCSG).union(Torus1CSG).union(Torus2CSG).union(Torus3CSG).union(Cylinder1CSG); 
+                                                 //CONVERTIR A THREE
+			                        var Peon = THREE.CSG.toMesh( Result );
+                                                //Peon.translateX(2);
+						var voxel = Peon;
+                                                voxel.material = new THREE.MeshStandardMaterial( { color: 0xF7D358, metalness: 0.5, roughness: 0.1 } );
+						voxel.position.copy( intersect.point ).add( intersect.face.normal );
+						voxel.position.divideScalar( 50 ).floor().multiplyScalar( 50 ).addScalar( 25 );
+						scene.add( voxel );
+						objects.push( voxel );
+
+					}
+
+					render();
+
+				}
+
+			}
+
+			function onDocumentKeyDown( event ) {
+
+				switch ( event.keyCode ) {
+
+					case 16: isShiftDown = true; break;
+
+				}
+
+			}
+
+			function onDocumentKeyUp( event ) {
+
+				switch ( event.keyCode ) {
+
+					case 16: isShiftDown = false; break;
+
+				}
+
+			}
+
+			function render() {
+
+				renderer.render( scene, camera );
+
+			}
+
+			
+			function Voxel(){
+                        onDocumentMouseDown();				
+			}
+			
+			function Peon(){
+
+			}
+
+	    </script>
+      </body>
+</html>

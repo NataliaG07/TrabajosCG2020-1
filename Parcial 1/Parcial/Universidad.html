@@ -1,0 +1,200 @@
+ <!DOCTYPE html>
+<html>
+  <head>
+    <title>Edificio</title>
+    <style>
+      html, body { margin: 0; padding: 0; overflow: hidden; }
+    </style>
+  </head>
+  <body>
+    <script src="js/three.min.js"></script>
+    <script>
+        var scene, aspect, camera, renderer;
+var startTime = Date.now();
+
+init();
+animate();
+
+function init(){
+scene = new THREE.Scene();
+aspect = window.innerWidth / window.innerHeight;
+camera = new THREE.PerspectiveCamera( 45, aspect, 0.1, 1000);
+renderer = new THREE.WebGLRenderer();
+renderer.setSize( window.innerWidth, window.innerHeight );
+document.body.appendChild( renderer.domElement );
+ 
+var size = 10;
+       var upArrow = false;
+       var downArrow = false;
+                        var rightArrow = false;
+                        var leftArrow = false;
+var arrowSize = 1;
+var divisions = size;
+var origin = new THREE.Vector3( 0, 0, 0);
+var x = new THREE.Vector3( 1, 0, 0 );
+var y = new THREE.Vector3( 0, 1, 0 );
+  var z = new THREE.Vector3( 0, 0, 1 );
+var color1 = new THREE.Color( 0xFFFFFF );
+  var color2 = new THREE.Color( 0x333333 );
+  var colorR = new THREE.Color( 0xAA3333 );
+  var colorG = new THREE.Color( 0x33AA33 );
+  var colorB = new THREE.Color( 0x333366 );
+ 
+  //CREAR LAS GRILLAS PARA EL ESCENARIO
+ var axesHelper = new THREE.AxesHelper( size );
+ var gridHelperXY = new THREE.GridHelper( size, divisions, color1, color1);
+ var gridHelperXZ = new THREE.GridHelper( size, divisions, color2, color2 );
+          var gridHelperYZ = new THREE.GridHelper( size, divisions, color2, color2 );
+           
+            //ROTARLAS PARA QUE QUEDEN EN EL ESPACIO ADECUADO
+            gridHelperXY.rotateOnWorldAxis ( x, THREE.Math.degToRad(90) );
+            gridHelperXZ.rotateOnWorldAxis ( y, THREE.Math.degToRad(90) );
+            gridHelperYZ.rotateOnWorldAxis ( z, THREE.Math.degToRad(90) );
+           
+            //CREAR LAS FLECHAS QUE INDICAN LOS EJES DE COORDENADAS 3D
+            var arrowX = new THREE.ArrowHelper( x, origin, arrowSize, colorR );
+            var arrowY = new THREE.ArrowHelper( y, origin, arrowSize, colorG );
+            var arrowZ = new THREE.ArrowHelper( z, origin, arrowSize, colorB );
+
+//EVENTOS DE TECLADO
+                          var onKeyDown = function ( event ) {
+switch ( event.keyCode ) {
+case 39:
+rightArrow = true;
+break;
+case 37:
+leftArrow = true;
+break;
+case 38:
+upArrow = true;
+break;
+case 40:
+downArrow = true;
+break;
+}
+};  
+ 
+var onKeyUp = function ( event ) {
+switch ( event.keyCode ) {
+case 39:
+rightArrow = false;
+break;
+case 37:
+leftArrow = false;
+break;
+case 38:
+upArrow = false;
+break;
+case 40:
+downArrow = false;
+break;
+}
+};  
+
+document.addEventListener( 'keydown', onKeyDown, false );
+document.addEventListener( 'keyup', onKeyUp, false );
+
+
+//CREA SOL
+var circleGeometry= new THREE.Geometry();
+var re = 90;
+var re2 = 180;
+
+for(var j=-180; j<re; j++){
+      for(var i=-360; i<re2; i++){
+          var line = new THREE.Vector3();
+line.x = (0.5 * Math.cos(Math.PI*j/re) - 2);
+line.z = (0.5 * Math.cos(Math.PI*i/re2)*Math.sin(Math.PI*j/re) - 5);
+       line.y = (0.5 * Math.sin(Math.PI*i/re2)*Math.sin(Math.PI*j/re) + 5);
+          circleGeometry.vertices.push(line);}}  
+
+          //CREAR EDIFICIOS
+
+          var EdificioA = new THREE.BoxGeometry( 1, 1, 1 );
+          EdificioA.applyMatrix( new THREE.Matrix4().makeTranslation(2,.1,1));
+          EdificioA.applyMatrix(new THREE.Matrix4().makeScale(2,5,2));
+          var EdificioB = new THREE.BoxGeometry( 1, 1, 1 );
+          EdificioB.applyMatrix( new THREE.Matrix4().makeTranslation(0,.1,1));
+          EdificioB.applyMatrix(new THREE.Matrix4().makeScale(2,5,2));
+          var EdificioC = new THREE.BoxGeometry( 1, 1, 1 );
+          EdificioC.applyMatrix( new THREE.Matrix4().makeTranslation(-1,.1,1));
+          EdificioC.applyMatrix(new THREE.Matrix4().makeScale(2,5,2));
+          var EdificioD = new THREE.BoxGeometry( 1, 1, 1 );
+          EdificioD.applyMatrix( new THREE.Matrix4().makeTranslation(-2,.1,1));
+          EdificioD.applyMatrix(new THREE.Matrix4().makeScale(2,5,2));
+          var EdificioE = new THREE.BoxGeometry( 1, 1, 1 );
+          EdificioE.applyMatrix( new THREE.Matrix4().makeTranslation(-0.3,.1,0));
+          EdificioE.applyMatrix(new THREE.Matrix4().makeScale(6,5,2));
+          var CafeLeyenda = new THREE.BoxGeometry( 1, 1, 1 );
+          CafeLeyenda.applyMatrix( new THREE.Matrix4().makeTranslation(1,.1,1));
+          CafeLeyenda.applyMatrix(new THREE.Matrix4().makeScale(2,3,2));
+          var Cesped = new THREE.BoxGeometry( 1, 1, 1);
+          Cesped.applyMatrix( new THREE.Matrix4().makeTranslation(0,-20,0));
+          Cesped.applyMatrix(new THREE.Matrix4().makeScale(20,.1,17));
+          var Canchas = new THREE.BoxGeometry( 1, 1, 1 );
+          Canchas.applyMatrix( new THREE.Matrix4().makeTranslation(.6,-5,3));
+          Canchas.applyMatrix(new THREE.Matrix4().makeScale(5,.3,2));
+         
+           //CREAR LOS MATERIALES
+            var material = new THREE.MeshBasicMaterial({color:0xFFFF00, size: 0.1});
+            var MaterialEdificioA = new THREE.MeshBasicMaterial( {color: 0x337CFF} );
+            var MaterialEdificioB = new THREE.MeshBasicMaterial( {color: 0x33A6FF} );
+            var MaterialEdificioC = new THREE.MeshBasicMaterial( {color: 0x33DBFF} );
+            var MaterialEdificioD = new THREE.MeshBasicMaterial( {color: 0x33FFF2} );
+            var MaterialEdificioE = new THREE.MeshBasicMaterial( {color: 0x11A0D0} );
+            var MaterialCafeLeyenda = new THREE.MeshBasicMaterial( {color: 0x6E15D7} );
+            var MaterialCesped = new THREE.MeshBasicMaterial( {color: 0x5F990B} );
+            var MaterialCanchas = new THREE.MeshBasicMaterial( {color: 0x0864E1} );
+
+            //CREAR LOS OBJETOS
+            var circle = new THREE.Line(circleGeometry, material);
+            var EdificioA = new THREE.Mesh( EdificioA , MaterialEdificioA );
+            var EdificioB = new THREE.Mesh( EdificioB , MaterialEdificioB );
+            var EdificioC = new THREE.Mesh( EdificioC , MaterialEdificioC );
+            var EdificioD = new THREE.Mesh( EdificioD , MaterialEdificioD );
+            var CafeLeyenda = new THREE.Mesh( CafeLeyenda , MaterialCafeLeyenda );
+            var Cesped = new THREE.Mesh( Cesped , MaterialCesped );
+            var EdificioE = new THREE.Mesh( EdificioE , MaterialEdificioE );
+            var Canchas = new THREE.Mesh( Canchas , MaterialCanchas );
+            //AGREGAR A LA ESCENA
+
+                        scene.add(circle);
+                        scene.add( EdificioA );
+                        scene.add( EdificioB );
+                        scene.add( EdificioC );
+                        scene.add( EdificioD );
+                        scene.add( EdificioE );
+                        scene.add( CafeLeyenda);
+                        scene.add( Cesped );
+                        scene.add( Canchas );
+
+
+
+camera.position.x = 10;
+camera.position.y = 15;
+  camera.position.z =  20;
+  camera.lookAt( origin );
+}
+
+    function animate() {
+        render();
+        requestAnimationFrame( animate );
+    }
+   
+     function render(){
+        var dtime = Date.now()-startTime;
+ 
+        camera.lookAt(0, 0, 0);
+//var tx=0, ty=0, tz=0;
+// if(upArrow) {
+//        camera.positon.x.applyMatrix( new THREE.Matrix4().makeTranslation(4,.1,0));
+// }
+// if(downArrow) {
+// camera.positon.y.applyMatrix( new THREE.Matrix4().makeTranslation(4,.1,0));
+// }    
+        renderer.render( scene, camera );
+    }
+    </script>
+  </body>
+</html> 
+

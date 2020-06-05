@@ -1,0 +1,513 @@
+<title>Parcial Segundo Corte u1202076</title>
+    <style>
+      html, body { margin: 0; padding: 0; overflow: hidden; }
+    </style>
+  </head>
+  <body>
+    <script src="js/three.js"></script>
+	<script src="js/controls/OrbitControls.js"></script>
+	<script src="js/csg.js"></script>
+	<script src="js/THREE.CSG.js"></script>
+    <script>
+		var scene, aspect, camera, renderer, controls;
+		init();
+		animate();
+		function init(){
+			//INICIALIZACIÓN
+	        scene = new THREE.Scene();
+	        scene.background = new THREE.Color( 0xa0a0a0 );
+	        aspect = window.innerWidth / window.innerHeight;
+	        camera = new THREE.PerspectiveCamera( 75, aspect, 0.1, 1000);
+	        renderer = new THREE.WebGLRenderer();
+	        renderer.setSize( window.innerWidth, window.innerHeight );
+	        document.body.appendChild( renderer.domElement );
+			controls = new THREE.OrbitControls( camera, renderer.domElement );
+			
+			//ELEMENTOS COMUNES
+			var size = 10;
+			var arrowSize = 1;
+			var divisions = size;
+			var origin = new THREE.Vector3( 0, 0, 0 );
+			var x = new THREE.Vector3( 1, 0, 0 );
+			var y = new THREE.Vector3( 0, 1, 0 );
+		  	var z = new THREE.Vector3( 0, 0, 1 );
+		  	var color = new THREE.Color( 0x333333 );
+		  	var colorR = new THREE.Color( 0xAA3333 );
+		  	var colorG = new THREE.Color( 0x33AA33 );
+		  	var colorB = new THREE.Color( 0x333366 );
+			
+		  	//CREAR LAS GRILLAS PARA EL ESCENARIO
+		  	var axesHelper = new THREE.AxesHelper( size );
+			scene.add( axesHelper );
+			
+		  	var gridHelperXZ = new THREE.GridHelper( size, divisions, color, color );
+			scene.add( gridHelperXZ );
+            
+            //ROTARLAS PARA QUE QUEDEN EN EL ESPACIO ADECUADO
+            gridHelperXZ.rotateOnWorldAxis ( y, THREE.Math.degToRad(90) );
+
+            //CREAR ILUMINACIÓN
+            var ambient = new THREE.AmbientLight( 0xffffff, 2 );
+            scene.add( ambient );
+			
+            var pointLight = new THREE.PointLight( 0xffffff, 1, 100 );
+            pointLight.position.set( -5, 1, 5 );
+            scene.add( pointLight );
+			
+            var pointLight = new THREE.PointLight( 0xffffff, .5, 100 );
+            pointLight.position.set( 5, 1, -5 );
+            scene.add( pointLight );
+			
+
+			//CREAR LAS GEOMETRÍAS
+                        //Caballo 
+                        var curve2D = [];
+                        curve2D[0] = new THREE.Vector3(-0.006, 3.469, -0.437);     
+                        curve2D[1] = new THREE.Vector3(-0.320, 4.229, -1.899);
+                        curve2D[2] = new THREE.Vector3(-0.353, 3.971, -1.899);
+                        curve2D[3] = new THREE.Vector3(-0.681, 3.792, -2.241);
+                        curve2D[4] = new THREE.Vector3(-0.645, 3.610, -2.493);
+                        curve2D[5] = new THREE.Vector3(-1.130, 3.293, -2.736);
+                        curve2D[6] = new THREE.Vector3(-0.982, 3.128, -2.694);
+                        curve2D[7] = new THREE.Vector3(-0.882, 3.068, -2.694);
+                        curve2D[8] = new THREE.Vector3(-0.618, 2.979, -2.100);
+                        curve2D[9] = new THREE.Vector3(-0.005, 2.197, -1.603);
+                        curve2D[10] = new THREE.Vector3(-0.036, 1.730, -0.794);
+
+                        curve2D.closed = true;
+
+			var shape = new THREE.Shape();
+			//shape.splineThru(curve2D);
+			shape.setFromPoints(curve2D);
+            
+                        var material = new THREE.LineBasicMaterial( { color : 0x61380B } );
+                        var resolution = 70;
+                        var points = shape.getPoints( resolution );
+                        var geometry = new THREE.BufferGeometry().setFromPoints( points );
+
+			//EXTRUDE
+			var extrudeSettings = {
+				steps: 2,
+				amount: 0.5,
+				bevelEnabled: false,
+			};
+
+			var TBoxGeometry = new THREE.BoxGeometry(  0.7, 0.7, 0.7 );
+                        var TCylinderGeometry2 = new THREE.CylinderGeometry( 0.07,0.07,1,60);
+                        var TCylinderGeometry3 = new THREE.CylinderGeometry( 0.07,0.07,1,60);
+                        var TTorusGeometry = new THREE.TorusGeometry( .1, 0.08, 0.5, 20  );
+                        var TTorusGeometry1 = new THREE.TorusGeometry( .3, 0.08, 0.4, 20 );
+                        var TTorusGeometry2 = new THREE.TorusGeometry( .4, 0.08, 0.8, 20  );
+                        var TTorusGeometry3 = new THREE.TorusGeometry( .4, 0.08, 0.4, 20 );
+                        var TTorusGeometry4 = new THREE.TorusGeometry( .1, 0.08, 0.4, 20 );
+                        var TCylinderGeometry = new THREE.CylinderGeometry( 0.1,0.2,0.2,40);
+                        var TCylinderGeometry1 = new THREE.CylinderGeometry(  0.1,0.4,2,40);
+
+      		        var CBoxGeometry = new THREE.BoxGeometry(  0.2, 0.8, 0.3 );
+                        var geometryCara = new THREE.ExtrudeGeometry( shape, extrudeSettings );
+			var CSphereGeometry = new THREE.SphereGeometry( .35, 32, 32 );
+			var CSphereGeometry1 = new THREE.SphereGeometry( .55, 32, 32 );
+                        var CircleGeometry = new THREE.CircleGeometry( 0.4, 32 );
+                        var CTorusGeometry1 = new THREE.TorusGeometry( .4, 0.08, 0.4, 20 );
+                        var CTorusGeometry2 = new THREE.TorusGeometry( .5, 0.08, 0.8, 20 );
+                        var CTorusGeometry3 = new THREE.TorusGeometry( .5, 0.08, 0.4, 20 );
+
+			var SphereGeometry = new THREE.SphereGeometry( .3, 32, 32 );
+                        var TorusGeometry = new THREE.TorusGeometry( .1, 0.08, 0.5, 20 );
+                        var TorusGeometry1 = new THREE.TorusGeometry( .3, 0.08, 0.4, 20 );
+                        var TorusGeometry2 = new THREE.TorusGeometry( .4, 0.08, 0.8, 20 );
+                        var TorusGeometry3 = new THREE.TorusGeometry( .4, 0.08, 0.4, 20 );
+                        var CylinderGeometry = new THREE.CylinderGeometry( 0.1,0.2,0.2,40);
+                        var CylinderGeometry1 = new THREE.CylinderGeometry( 0.1,0.4,1.5,40);
+
+			var ASphereGeometry = new THREE.SphereGeometry( .3, 32, 32 );
+			var ASphereGeometry1 = new THREE.SphereGeometry( .08, 32, 32 );
+                        var ATorusGeometry = new THREE.TorusGeometry( .1, 0.08, 0.5, 20 );
+                        var ATorusGeometry1 = new THREE.TorusGeometry( .3, 0.08, 0.4, 20 );
+                        var ATorusGeometry2 = new THREE.TorusGeometry( .4, 0.08, 0.8, 20 );
+                        var ATorusGeometry3 = new THREE.TorusGeometry( .4, 0.08, 0.4, 20 );
+                        var ATorusGeometry4 = new THREE.TorusGeometry( .1, 0.08, 0.4, 20 );
+                        var ACylinderGeometry = new THREE.CylinderGeometry( 0.1,0.2,0.2,40);
+                        var ACylinderGeometry1 = new THREE.CylinderGeometry( 0.1,0.4,2,40);
+                        var AConeGeometry = new THREE.ConeGeometry( 0.29, 0.5, 32 );
+
+			var RBoxGeometry = new THREE.BoxGeometry(  0.6, 0.6, 0.6 );
+			var RSphereGeometry = new THREE.SphereGeometry( .3, 32, 32 );
+			var RSphereGeometry1 = new THREE.SphereGeometry( .08, 32, 32 );
+			var RSphereGeometry2 = new THREE.SphereGeometry( .25, 32, 32 );
+                        var RTorusGeometry = new THREE.TorusGeometry( .15, 0.08, 0.5, 20 );
+                        var RTorusGeometry1 = new THREE.TorusGeometry( .4, 0.08, 0.4, 20 );
+                        var RTorusGeometry2 = new THREE.TorusGeometry( .5, 0.08, 0.8, 20 );
+                        var RTorusGeometry3 = new THREE.TorusGeometry( .5, 0.08, 0.4, 20 );
+                        var RTorusGeometry4 = new THREE.TorusGeometry( .15, 0.08, 0.4, 20 );
+                        var RCylinderGeometry = new THREE.CylinderGeometry( 0.1,0.25,0.25,60);
+                        var RCylinderGeometry1 = new THREE.CylinderGeometry( 0.1,0.4,3,60);
+
+			var ReBoxGeometry = new THREE.BoxGeometry(  0.6, 0.6, 0.6 );
+			var ReSphereGeometry = new THREE.SphereGeometry( .3, 32, 32 );
+			var ReSphereGeometry2 = new THREE.SphereGeometry( .25, 32, 32 );
+                        var ReTorusGeometry = new THREE.TorusGeometry( .15, 0.08, 0.5, 20 );
+                        var ReTorusGeometry1 = new THREE.TorusGeometry( .4, 0.08, 0.4, 20 );
+                        var ReTorusGeometry2 = new THREE.TorusGeometry( .5, 0.08, 0.8, 20 );
+                        var ReTorusGeometry3 = new THREE.TorusGeometry( .5, 0.08, 0.4, 20 );
+                        var ReTorusGeometry4 = new THREE.TorusGeometry( .15, 0.08, 0.4, 20 );
+                        var ReCylinderGeometry = new THREE.CylinderGeometry( 0.1,0.25,0.25,60);
+                        var ReCylinderGeometry1 = new THREE.CylinderGeometry( 0.1,0.4,3,60);
+                        var ReCylinderGeometry2 = new THREE.CylinderGeometry( 0.07,0.07,1,60);
+                        var ReCylinderGeometry3 = new THREE.CylinderGeometry( 0.07,0.07,0.5,60);
+
+			//CREAR LOS MATERIALES
+                        var material = new THREE.MeshStandardMaterial( { color: colorR, metalness: 0.5, roughness: 0.1 } );
+			var material1 = new THREE.MeshStandardMaterial( { color: 0xF7D358, metalness: 0.5, roughness: 0.1 } );
+                       
+			//CREAR LAS MALLAS
+			var TBox = new THREE.Mesh( TBoxGeometry, material);
+                        TBox.translateY(2.4);
+			var TCylinder2 = new THREE.Mesh( TCylinderGeometry2, material);
+                        TCylinder2.rotateX(55);
+                        TCylinder2.translateZ(2.7);
+                        TCylinder2.translateX(0.2);
+                        TCylinder2.translateY(0.15);
+			var TCylinder3 = new THREE.Mesh( TCylinderGeometry3, material);
+                        TCylinder3.rotateX(55);
+                        TCylinder3.translateZ(2.7);
+                        TCylinder3.translateX(-0.2);
+                        TCylinder3.translateY(0.15);
+			var TTorus = new THREE.Mesh( TTorusGeometry, material);
+                        TTorus.rotateX(55);
+                        TTorus.translateZ(2.7);
+                        TTorus.translateY(0.05);
+			var TTorus1 = new THREE.Mesh( TTorusGeometry1, material);
+                        TTorus1.rotateX(55);
+                        TTorus1.translateZ(0.4);
+			var TTorus2 = new THREE.Mesh( TTorusGeometry2, material);
+                        TTorus2.rotateX(55);
+                        TTorus2.translateZ(0.3);
+			var TTorus3 = new THREE.Mesh( TTorusGeometry3, material);
+                        TTorus3.rotateX(55);
+                        TTorus3.translateZ(0.1);
+			var TTorus4 = new THREE.Mesh( TTorusGeometry4, material);
+                        TTorus4.rotateX(55);
+                        TTorus4.translateZ(2.6);
+                        TTorus4.translateY(0.05);
+			var TCylinder = new THREE.Mesh( TCylinderGeometry, material);
+                        TCylinder.translateY(2);
+			var TCylinder1 = new THREE.Mesh( TCylinderGeometry1, material);
+                        TCylinder1.translateY(1);
+
+			var Sphere = new THREE.Mesh( SphereGeometry, material);
+                        Sphere.translateY(2);
+			var Torus = new THREE.Mesh( TorusGeometry, material);
+                        Torus.rotateX(55);
+                        Torus.translateZ(1.7);
+                        Torus.translateY(0.05);
+			var Torus1 = new THREE.Mesh( TorusGeometry1, material);
+                        Torus1.rotateX(55);
+                        Torus1.translateZ(0.4);
+			var Torus2 = new THREE.Mesh( TorusGeometry2, material);
+                        Torus2.rotateX(55);
+                        Torus2.translateZ(0.3);
+			var Torus3 = new THREE.Mesh( TorusGeometry3, material);
+                        Torus3.rotateX(55);
+                        Torus3.translateZ(0.1);
+			var Cylinder = new THREE.Mesh( CylinderGeometry, material);
+                        Cylinder.translateY(1.6);
+			var Cylinder1 = new THREE.Mesh( CylinderGeometry1, material);
+                        Cylinder1.translateY(0.8);
+
+			var ASphere = new THREE.Mesh( ASphereGeometry, material);
+                        ASphere.translateY(2.5);
+			var ASphere1 = new THREE.Mesh( ASphereGeometry1, material);
+                        ASphere1.translateY(2.95);
+			var ATorus = new THREE.Mesh( ATorusGeometry, material);
+                        ATorus.rotateX(55);
+                        ATorus.translateZ(2.2);
+                        ATorus.translateY(0.05);
+			var ATorus1 = new THREE.Mesh( ATorusGeometry1, material);
+                        ATorus1.rotateX(55);
+                        ATorus1.translateZ(0.4);
+			var ATorus2 = new THREE.Mesh( ATorusGeometry2, material);
+                        ATorus2.rotateX(55);
+                        ATorus2.translateZ(0.3);
+			var ATorus3 = new THREE.Mesh( ATorusGeometry3, material);
+                        ATorus3.rotateX(55);
+                        ATorus3.translateZ(0.1);
+			var ATorus4 = new THREE.Mesh( ATorusGeometry4, material);
+                        ATorus4.rotateX(55);
+                        ATorus4.translateZ(2.1);
+                        ATorus4.translateY(0.05);
+			var ACylinder = new THREE.Mesh( ACylinderGeometry, material);
+                        ACylinder.translateY(2);
+			var ACylinder1 = new THREE.Mesh( ACylinderGeometry1, material);
+                        ACylinder1.translateY(1);
+			var ACone = new THREE.Mesh( AConeGeometry, material);
+                        ACone.translateY(2.8);
+
+			var RBox = new THREE.Mesh( RBoxGeometry, material);
+                        RBox.translateY(3.3);
+			var RSphere = new THREE.Mesh( RSphereGeometry, material);
+                        RSphere.translateY(3.0);
+			var RSphere1 = new THREE.Mesh( RSphereGeometry1, material);
+                        RSphere1.translateY(3.3);
+			var RSphere2 = new THREE.Mesh( RSphereGeometry2, material);
+                        RSphere2.translateY(3);
+			var RTorus = new THREE.Mesh( RTorusGeometry, material);
+                        RTorus.rotateX(55);
+                        RTorus.translateZ(2.7);
+                        RTorus.translateY(0.05);
+			var RTorus1 = new THREE.Mesh( RTorusGeometry1, material);
+                        RTorus1.rotateX(55);
+                        RTorus1.translateZ(0.4);
+			var RTorus2 = new THREE.Mesh( RTorusGeometry2, material);
+                        RTorus2.rotateX(55);
+                        RTorus2.translateZ(0.3);
+			var RTorus3 = new THREE.Mesh( RTorusGeometry3, material);
+                        RTorus3.rotateX(55);
+                        RTorus3.translateZ(0.1);
+			var RTorus4 = new THREE.Mesh( RTorusGeometry4, material);
+                        RTorus4.rotateX(55);
+                        RTorus4.translateZ(2.6);
+                        RTorus4.translateY(0.05);
+			var RCylinder = new THREE.Mesh( RCylinderGeometry, material);
+                        RCylinder.translateY(2.5);
+			var RCylinder1 = new THREE.Mesh( RCylinderGeometry1, material);
+                        RCylinder1.translateY(1.5);
+
+			var ReBox = new THREE.Mesh( ReBoxGeometry, material);
+                        ReBox.translateY(3.3);
+			var ReSphere = new THREE.Mesh( ReSphereGeometry, material);
+                        ReSphere.translateY(3.0);
+			var ReSphere2 = new THREE.Mesh( ReSphereGeometry2, material);
+                        ReSphere2.translateY(3);
+			var ReTorus = new THREE.Mesh( ReTorusGeometry, material);
+                        ReTorus.rotateX(55);
+                        ReTorus.translateZ(2.7);
+                        ReTorus.translateY(0.05);
+			var ReTorus1 = new THREE.Mesh( ReTorusGeometry1, material);
+                        ReTorus1.rotateX(55);
+                        ReTorus1.translateZ(0.4);
+			var ReTorus2 = new THREE.Mesh( ReTorusGeometry2, material);
+                        ReTorus2.rotateX(55);
+                        ReTorus2.translateZ(0.3);
+			var ReTorus3 = new THREE.Mesh( ReTorusGeometry3, material);
+                        ReTorus3.rotateX(55);
+                        ReTorus3.translateZ(0.1);
+			var ReTorus4 = new THREE.Mesh( ReTorusGeometry4, material);
+                        ReTorus4.rotateX(55);
+                        ReTorus4.translateZ(2.6);
+                        ReTorus4.translateY(0.05);
+			var ReCylinder = new THREE.Mesh( ReCylinderGeometry, material);
+                        ReCylinder.translateY(2.5);
+			var ReCylinder1 = new THREE.Mesh( ReCylinderGeometry1, material);
+                        ReCylinder1.translateY(1.5);
+			var ReCylinder2 = new THREE.Mesh( ReCylinderGeometry2, material);
+                        ReCylinder2.translateY(3.1);
+			var ReCylinder3 = new THREE.Mesh( ReCylinderGeometry3, material);
+                        ReCylinder3.rotateZ(55)
+                        ReCylinder3.translateX(-3.4);
+                        ReCylinder3.translateY(0.07);
+			
+                        var CBox = new THREE.Mesh( CBoxGeometry, material);
+                        CBox.translateY(2);
+                        CBox.translateX(0.3);
+                        CBox.rotateY(1.7);
+                        CBox.rotateX(0.5);
+			var Caballo = new THREE.Mesh( geometryCara, material ) ;
+                        Caballo.translateX(0.1);
+                        Caballo.translateY(-1.8);
+                        Caballo.translateZ(0.3);
+                        Caballo.rotateY(-3.1);
+			var CSphere = new THREE.Mesh( CSphereGeometry, material);
+                        CSphere.translateY(1.4);
+                        CSphere.translateX(0.6);
+                        CSphere.translateZ(0.03);
+			var CSphere1 = new THREE.Mesh( CSphereGeometry1, material);
+                        CSphere1.translateY(0.6);
+                        CSphere1.translateX(0.3);
+                        CSphere1.translateZ(0.02);
+			var Circle = new THREE.Mesh( CircleGeometry, material ) ;
+                        material.side = THREE.DoubleSide;
+                        Circle.translateY(2);
+                        Circle.translateX(0.25);
+			var CTorus1 = new THREE.Mesh( CTorusGeometry1, material);
+                        CTorus1.rotateX(55);
+                        CTorus1.translateZ(0.3);
+                        CTorus1.translateX(0.3);
+			var CTorus2 = new THREE.Mesh( CTorusGeometry2, material);
+                        CTorus2.rotateX(55);
+                        CTorus2.translateZ(0.2);
+                        CTorus2.translateX(0.3);
+			var CTorus3 = new THREE.Mesh( CTorusGeometry3, material);
+                        CTorus3.rotateX(55);
+                        CTorus3.translateZ(0.09);
+                        CTorus3.translateX(0.3);
+
+                        //CONVERTIR A CSG
+			var SphereCSG = THREE.CSG.fromMesh( Sphere );
+			var TorusCSG = THREE.CSG.fromMesh( Torus );
+			var Torus1CSG = THREE.CSG.fromMesh( Torus1 );
+			var Torus2CSG = THREE.CSG.fromMesh( Torus2 );
+			var Torus3CSG = THREE.CSG.fromMesh( Torus3 );
+			var Torus3CSG = THREE.CSG.fromMesh( Torus3 );
+			var CylinderCSG = THREE.CSG.fromMesh( Cylinder );
+			var Cylinder1CSG = THREE.CSG.fromMesh( Cylinder1 );
+
+			var ASphereCSG = THREE.CSG.fromMesh( ASphere );
+			var ASphere1CSG = THREE.CSG.fromMesh( ASphere1 );
+			var ATorusCSG = THREE.CSG.fromMesh( ATorus );
+			var ATorus1CSG = THREE.CSG.fromMesh( ATorus1 );
+			var ATorus2CSG = THREE.CSG.fromMesh( ATorus2 );
+			var ATorus3CSG = THREE.CSG.fromMesh( ATorus3 );
+			var ATorus3CSG = THREE.CSG.fromMesh( ATorus3 );
+			var ATorus4CSG = THREE.CSG.fromMesh( ATorus4 );
+			var ACylinderCSG = THREE.CSG.fromMesh( ACylinder );
+			var ACylinder1CSG = THREE.CSG.fromMesh( ACylinder1 );
+			var AConeCSG = THREE.CSG.fromMesh( ACone );
+
+			var RBoxCSG = THREE.CSG.fromMesh( RBox );
+			var RSphereCSG = THREE.CSG.fromMesh( RSphere );		
+			var RSphere1CSG = THREE.CSG.fromMesh( RSphere1 );
+			var RSphere2CSG = THREE.CSG.fromMesh( RSphere2 );
+			var RTorusCSG = THREE.CSG.fromMesh( RTorus );
+			var RTorus1CSG = THREE.CSG.fromMesh( RTorus1 );
+			var RTorus2CSG = THREE.CSG.fromMesh( RTorus2 );
+			var RTorus3CSG = THREE.CSG.fromMesh( RTorus3 );
+			var RTorus3CSG = THREE.CSG.fromMesh( RTorus3 );
+			var RTorus4CSG = THREE.CSG.fromMesh( RTorus4 );
+			var RCylinderCSG = THREE.CSG.fromMesh( RCylinder );
+			var RCylinder1CSG = THREE.CSG.fromMesh( RCylinder1 );
+
+			var ReBoxCSG = THREE.CSG.fromMesh( ReBox );
+			var ReSphereCSG = THREE.CSG.fromMesh( ReSphere );		
+			var ReSphere2CSG = THREE.CSG.fromMesh( ReSphere2 );
+			var ReTorusCSG = THREE.CSG.fromMesh( ReTorus );
+			var ReTorus1CSG = THREE.CSG.fromMesh( ReTorus1 );
+			var ReTorus2CSG = THREE.CSG.fromMesh( ReTorus2 );
+			var ReTorus3CSG = THREE.CSG.fromMesh( ReTorus3 );
+			var ReTorus3CSG = THREE.CSG.fromMesh( ReTorus3 );
+			var ReTorus4CSG = THREE.CSG.fromMesh( ReTorus4 );
+			var ReCylinderCSG = THREE.CSG.fromMesh( ReCylinder );
+			var ReCylinder1CSG = THREE.CSG.fromMesh( ReCylinder1 );
+			var ReCylinder2CSG = THREE.CSG.fromMesh( ReCylinder2 );
+			var ReCylinder3CSG = THREE.CSG.fromMesh( ReCylinder3 );
+
+			var CBoxCSG = THREE.CSG.fromMesh( CBox );
+                        var CaballoCSG = THREE.CSG.fromMesh( Caballo );
+			var CSphere1CSG = THREE.CSG.fromMesh( CSphere1 );
+			var CSphereCSG = THREE.CSG.fromMesh( CSphere );
+			var CircleCSG = THREE.CSG.fromMesh( Circle );
+			var CTorus1CSG = THREE.CSG.fromMesh( CTorus1 );
+			var CTorus2CSG = THREE.CSG.fromMesh( CTorus2 );
+			var CTorus3CSG = THREE.CSG.fromMesh( CTorus3 );
+
+			var TBoxCSG = THREE.CSG.fromMesh( TBox );
+			var TCylinder2CSG = THREE.CSG.fromMesh( TCylinder2 );
+			var TCylinder3CSG = THREE.CSG.fromMesh( TCylinder3 );
+			var TTorusCSG = THREE.CSG.fromMesh( TTorus );
+			var TTorus1CSG = THREE.CSG.fromMesh( TTorus1 );
+			var TTorus2CSG = THREE.CSG.fromMesh( TTorus2 );
+			var TTorus3CSG = THREE.CSG.fromMesh( TTorus3 );
+			var TTorus3CSG = THREE.CSG.fromMesh( TTorus3 );
+			var TTorus4CSG = THREE.CSG.fromMesh( TTorus4 );
+			var TCylinderCSG = THREE.CSG.fromMesh( TCylinder );
+			var TCylinder1CSG = THREE.CSG.fromMesh( TCylinder1 );
+
+                        //APLICAR LAS OPERACIONES
+			var Result = SphereCSG.union( TorusCSG ).union(CylinderCSG).union(Torus1CSG).union(Torus2CSG).union(Torus3CSG).union(Cylinder1CSG); 
+			var Result1 = ASphereCSG.union(ASphere1CSG).union( ATorusCSG ).union(ATorus4CSG).union(ATorus1CSG).union(ATorus2CSG).union(ATorus3CSG).union(ACylinderCSG).union(ACylinder1CSG).union(AConeCSG);
+			var Result2 = RSphereCSG.subtract(RBoxCSG).union(RSphere1CSG).union( RTorusCSG ).union(RTorus4CSG).union(RTorus1CSG).union(RTorus2CSG).union(RTorus3CSG).union(RCylinderCSG).union(RCylinder1CSG).union(RSphere2CSG);
+			var Result3 = ReSphereCSG.subtract(ReBoxCSG).union( ReTorusCSG ).union(ReTorus4CSG).union(ReTorus1CSG).union(ReTorus2CSG).union(ReTorus3CSG).union(ReCylinderCSG).union(ReCylinder1CSG).union(ReSphere2CSG).union(ReCylinder2CSG).union(ReCylinder3CSG);
+                        var Result4 = CaballoCSG.union(CSphere1CSG).union(CSphereCSG).union(CTorus1CSG).union(CTorus2CSG).union(CTorus3CSG).union(CBoxCSG);	
+                        var Result5 = TBoxCSG.subtract(TCylinder2CSG).subtract(TCylinder3CSG).union( TTorusCSG ).union(TTorus4CSG).union(TTorus1CSG).union(TTorus2CSG).union(TTorus3CSG).union(TCylinderCSG).union(TCylinder1CSG);	
+
+                        //CONVERTIR A THREE
+			var Peon = THREE.CSG.toMesh( Result );
+                        Peon.translateX(6);
+			Peon.material = material1;
+			var Alfil = THREE.CSG.toMesh( Result1 );
+			Alfil.material = material1;
+                        Alfil.translateX(-2);
+			var Rey = THREE.CSG.toMesh( Result2 );
+			Rey.material = material1;
+                        Rey.translateX(-4);
+			var Reina = THREE.CSG.toMesh( Result3 );
+			Reina.material = material1;
+                        Reina.translateX(-6);
+			var Caballoo = THREE.CSG.toMesh( Result4 );
+		        Caballoo.material = material1;
+                        Caballoo.translateX(4);
+			var Torre = THREE.CSG.toMesh( Result5 );
+		        Torre.material = material1;
+                        Torre.translateX(2);
+
+			//AGREGAR A LA ESCENA LOS DIFERENTES ELEMENTOS
+                        //scene.add( Sphere );
+                        //scene.add( Torus );
+                        //scene.add( Torus1 );
+                        //scene.add( Torus2 );
+                        //scene.add( Torus3 );
+                        //scene.add( Cylinder );
+                        //scene.add( Cylinder1 );
+                        //scene.add( ASphere );
+                        //scene.add( ASphere1 );
+                        //scene.add( ATorus );
+                        //scene.add( ATorus1 );
+                        //scene.add( ATorus2 );
+                        //scene.add( ATorus3 );
+                        //scene.add( ATorus4 );
+                        //scene.add( ACylinder );
+                        //scene.add( ACylinder1 );
+                        //scene.add( ACone );
+                        //scene.add( RBox );
+                        //scene.add( RSphere );
+                        //scene.add( RSphere1 );
+                        //scene.add( RSphere2 );
+                        //scene.add( RTorus );
+                        //scene.add( RTorus1 );
+                        //scene.add( RTorus2 );
+                        //scene.add( RTorus3 );
+                        //scene.add( RTorus4 );
+                        //scene.add( RCylinder );
+                        //scene.add( RCylinder1 );
+                        //scene.add( ReBox );
+                        //scene.add( ReSphere );
+                        //scene.add( ReSphere2 );
+                        //scene.add( ReTorus );
+                        //scene.add( ReTorus1 );
+                        //scene.add( ReTorus2 );
+                        //scene.add( ReTorus3 );
+                        //scene.add( ReTorus4 );
+                        //scene.add( ReCylinder );
+                        //scene.add( ReCylinder1 );
+                        //scene.add( ReCylinder2 );
+                        //scene.add( ReCylinder3 );
+			//scene.add( Caballo );
+                        //scene.add( CSphere );
+                        //scene.add( CSphere1 );
+                        //scene.add( Circle);
+                        //scene.add( TBox);
+                        //scene.add( TCylinder2);
+                        //scene.add( TCylinder3);
+                        scene.add( Torre);
+                        scene.add( Caballoo );
+                        scene.add( Peon );
+                        scene.add( Alfil );
+                        scene.add( Rey );
+                        scene.add( Reina );
+
+			camera.position.x = 2;
+			camera.position.y = 2;
+		  	camera.position.z = 5;
+			camera.lookAt( origin );
+		}
+		function animate(){
+			requestAnimationFrame( animate );
+			controls.update();
+			render();
+		}
+		function render(){
+			renderer.render( scene, camera );
+		}
+    </script>
+  </body>
+</html>

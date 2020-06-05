@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Escena</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <script src="js/three.js"></script>
+    <script src="js/controls/OrbitControls.js"></script>
+    <script src="js/csg.js"></script>
+    <script src="js/THREE.CSG.js"></script>
+    <script>
+
+        var scene, aspect, camera, renderer, controls;
+        var startTime = Date.now();
+
+        //Transforma grados a radianes
+        function GTR(grados) {
+            return grados * (Math.PI / 180);
+        }
+
+        init();
+        animate();
+        function init() {
+
+            //INICIALIZACIÓN
+            scene = new THREE.Scene();
+            aspect = window.innerWidth / window.innerHeight;
+            camera = new THREE.PerspectiveCamera(75, aspect, 1, 2000);
+            renderer = new THREE.WebGLRenderer();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+			
+            //ELEMENTOS COMUNES
+            var size = 500;
+            var arrowSize = 100;
+            var divisions = arrowSize;
+            var origin = new THREE.Vector3(0, 0, 0);
+            var x = new THREE.Vector3(1, 0, 0);
+            var y = new THREE.Vector3(0, 1, 0);
+            var z = new THREE.Vector3(0, 0, 1);
+            var color = new THREE.Color(0x333333);
+            var colorR = new THREE.Color(0xAA3333);
+            var colorG = new THREE.Color(0x33AA33);
+            var colorB = new THREE.Color(0x333366);
+
+            //CREAR LAS GRILLAS PARA EL ESCENARIO
+            var axesHelper = new THREE.AxesHelper(size);
+            //scene.add( axesHelper );
+
+            var gridHelperXZ = new THREE.GridHelper(size, divisions, color, color);
+            //scene.add(gridHelperXZ);
+
+
+            //ROTARLAS PARA QUE QUEDEN EN EL ESPACIO ADECUADO
+            gridHelperXZ.rotateOnWorldAxis(y, THREE.Math.degToRad(90));
+
+            //CREAR ILUMINACIÓN
+			
+            var ambient = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambient);
+			var pointLight0 = new THREE.PointLight(0xffffff, 1, 100);
+            pointLight0.position.set(0, 40, 0);
+            scene.add(pointLight0);
+            var pointLight = new THREE.PointLight(0xFFFFFF, 1, 100);
+            //scene.add(pointLight);
+			var sphereSize = 1;
+            var pointLightHelper = new THREE.PointLightHelper( pointLight, sphereSize );
+            //scene.add( pointLightHelper );
+			var pointLight1 = new THREE.PointLight(0xFFFF00, 0.5, 20);
+			pointLight1.position.set(40,9,30);
+            scene.add(pointLight1);
+			var sphereSize1 = 1;
+            var pointLightHelper1 = new THREE.PointLightHelper( pointLight1, sphereSize1 );		  
+			//scene.add( pointLightHelper1 );
+			var pointLight2 = new THREE.PointLight(0xFFFF00, 0.5, 20);
+			pointLight2.position.set(20,9,45);
+            scene.add(pointLight2);		
+		    var pointLight3 = new THREE.PointLight(0xFF0000, 1, 40);
+            scene.add(pointLight3);
+			
+             var light = new THREE.DirectionalLight( 0xFFFFFF, 0.5 );
+			 light.position.set(100,100,0);
+             var helper = new THREE.DirectionalLightHelper( light, 5 );
+             //scene.add( helper );
+			 //scene.add( light );
+
+            //CREAR LAS GEOMETRÍAS
+			
+			//Edificios
+			var geometry = new THREE.BoxGeometry( 40, 100, 40 );
+            var material = new THREE.MeshNormalMaterial( {color: 0xFF0000} );
+            var cube = new THREE.Mesh( geometry, material );
+			cube.translateZ(-100);
+			cube.translateY(50);			
+			cube.translateX(-100);
+            scene.add( cube );
+			var geometry1 = new THREE.BoxGeometry( 30, 80, 40 );
+            var cube1 = new THREE.Mesh( geometry1, material);
+			cube1.translateZ(-100);
+			cube1.translateY(40);			
+			cube1.translateX(-60);
+            scene.add( cube1 );
+			cube2 = cube.clone()
+			scene.add(cube2);
+			cube2.translateX(80);
+			var geometry2 = new THREE.BoxGeometry( 40, 90, 40 );
+            var cube3 = new THREE.Mesh( geometry2, material );
+			cube3.translateZ(-100);
+			cube3.translateY(45);			
+			cube3.translateX(100);
+            scene.add( cube3 );
+			var geometry3 = new THREE.BoxGeometry( 60, 100, 40 );
+            var cube4 = new THREE.Mesh( geometry3, material );
+			cube4.translateZ(-100);
+			cube4.translateY(50);			
+			cube4.translateX(35);
+            scene.add( cube4 );
+			
+			//Conos
+			var geometryCone = new THREE.ConeGeometry( 3, 20, 32 );
+		    var material = new THREE.MeshBasicMaterial({ color: 0xFFFF00, transparent: true, opacity:0.05 });
+            var cone = new THREE.Mesh( geometryCone, material );
+			cone.translateY(7.5);
+			cone.translateX(13.5);
+			cone.translateZ(30);
+			cone.rotateX(GTR(-45));
+			cone.rotateZ(GTR(30));
+			cone1 = cone.clone();
+			cone1.translateX(17);
+			cone1.translateY(-1);
+			cone1.translateZ(-9);
+			scene.add( cone );
+			scene.add( cone1 );
+			
+			//Plano
+			var geometry = new THREE.PlaneGeometry( 250, 250, 32 );
+            var material = new THREE.MeshToonMaterial( {color: 0xA4A4A4, side: THREE.DoubleSide} );
+            var plane = new THREE.Mesh( geometry, material );
+			geometry.rotateX(GTR(90));
+            scene.add( plane );
+
+            //CARRO
+            //Ruedas
+            var llantaMaterial = new THREE.MeshToonMaterial({ color: 0x000000 });
+            var materialRines = new THREE.MeshToonMaterial({ color: 0xDF013A, metalness: .8, roughness: .4 });
+            var geoLlanta = new THREE.TorusGeometry(.23, .09, 16, 25);
+            var geoRines = new THREE.CylinderGeometry(0.15, 0.15, 1.6, 32);
+            var llanta1 = new THREE.Mesh(geoLlanta, llantaMaterial);
+            var llanta2 = new THREE.Mesh(geoLlanta, llantaMaterial);
+            var rines1 = new THREE.Mesh(geoRines, materialRines);
+            llanta1.translateY(.2);
+            llanta1.translateX(.7);
+            llanta1.translateZ(.9);
+            llanta1.rotateY(GTR(90));
+            llanta2.translateY(.2);
+            llanta2.translateX(-.7);
+            llanta2.translateZ(.9);
+            llanta2.rotateY(GTR(90));
+            rines1.translateY(.2);
+            rines1.translateZ(.9);
+            rines1.rotateZ(GTR(90));
+            var llanta3, llanta4, rines2;
+            llanta3 = llanta1.clone();
+            llanta4 = llanta2.clone();
+            rines2 = rines1.clone();
+            llanta3.translateX(1.8);
+            llanta4.translateX(1.8);
+            rines2.translateZ(-1.8);
+
+            //Luces
+            var luzMaterial = new THREE.MeshStandardMaterial({ color: 0xFBD20A });
+            var luzMaterial2 = new THREE.MeshStandardMaterial({ color: 0xFB8C0A });
+            var geoLuzDelantera = new THREE.CylinderGeometry(.1, .1, .2, 32);
+            var luz1 = new THREE.Mesh(geoLuzDelantera, luzMaterial);
+            var luz2 = new THREE.Mesh(geoLuzDelantera, luzMaterial);
+            var luzt1 = new THREE.Mesh(geoLuzDelantera, luzMaterial2);
+            var luzt2 = new THREE.Mesh(geoLuzDelantera, luzMaterial2);
+            luz1.translateY(.35);
+            luz1.translateX(.45);
+            luz1.translateZ(1.35);
+            luz1.rotateX(GTR(90));
+            luz2.translateY(.35);
+            luz2.translateX(-.45);
+            luz2.translateZ(1.35);
+            luz2.rotateX(GTR(90));
+
+            luzt1.translateY(.45);
+            luzt1.translateX(.45);
+            luzt1.translateZ(-1.35);
+            luzt1.rotateX(GTR(90));
+            luzt2.translateY(.45);
+            luzt2.translateX(-.45);
+            luzt2.translateZ(-1.35);
+            luzt2.rotateX(GTR(90));
+
+
+            //Vidrios
+            var vidrioMaterial = new THREE.MeshToonMaterial({ color: 0xFAFAFA, transparent: true, opacity: 0.8});
+            var geoVidrio = new THREE.BoxGeometry(1.2, .02, .47);
+            var vidrio1 = new THREE.Mesh(geoVidrio, vidrioMaterial);
+            var vidrio2 = new THREE.Mesh(geoVidrio, vidrioMaterial);
+            var vidrio3 = new THREE.Mesh(geoVidrio, vidrioMaterial);
+            var vidrio4 = new THREE.Mesh(geoVidrio, vidrioMaterial);
+            vidrio2.applyMatrix(new THREE.Matrix4().makeScale(.5, .5, .8));
+            vidrio3.applyMatrix(new THREE.Matrix4().makeScale(.5, .5, .8));
+            vidrio1.translateY(.95);
+            vidrio1.translateZ(.5);
+            vidrio1.rotateX(GTR(50));
+            vidrio4.translateY(.9);
+            vidrio4.translateZ(-.92);
+            vidrio4.rotateX(GTR(90));
+            vidrio2.translateY(.92);
+            vidrio2.translateX(.7);
+            vidrio2.rotateY(GTR(90));
+            vidrio2.rotateX(GTR(90));
+            vidrio3.translateY(.92);
+            vidrio3.translateX(-.7);
+            vidrio3.rotateY(GTR(90));
+            vidrio3.rotateX(GTR(90));
+
+            //Chasis
+            var geoCaja = new THREE.BoxGeometry(2, 1.5, 4);
+            var geoCaja1 = new THREE.BoxGeometry(2, 1.5, 2);
+            var geoCaja2 = new THREE.BoxGeometry(2, .3, .2);
+            var geoCaja3 = new THREE.BoxGeometry(.1, .1, .2);
+            var geoRuedas1 = new THREE.CylinderGeometry(.45, .45, 2, 32);
+            //Materiales
+            var materialCarro = new THREE.MeshToonMaterial({ color: 0xE3220D, metalness: .4, roughness: .5 }); //Color negro: 0A0101
+            var myMaterial1 = new THREE.MeshToonMaterial({ color: colorR, transparent: true, opacity: 0.5 });
+            var myMaterial2 = new THREE.MeshStandardMaterial({ color: colorG, transparent: true, opacity: 0.6 });
+            var c1 = new THREE.Mesh(geoCaja);
+            var c2 = new THREE.Mesh(geoCaja1);
+            var c22 = new THREE.Mesh(geoCaja1);
+            var c222 = new THREE.Mesh(geoCaja1);
+            var c3 = new THREE.Mesh(geoCaja1);
+            var c4 = new THREE.Mesh(geoCaja2);
+            var c5 = new THREE.Mesh(geoCaja3);
+            var c6 = new THREE.Mesh(geoCaja3);
+            var cili1 = new THREE.Mesh(geoRuedas1);
+            var cili2 = new THREE.Mesh(geoRuedas1);
+			
+            //Acomodar
+            c1.translateY(.925);
+            c2.translateY(1.8);
+            c2.translateZ(2);
+            c22.translateY(1.8);
+            c22.translateZ(2);
+            c22.rotateX(GTR(45));
+            c222.translateY(2.3);
+            c222.translateZ(.9);
+            c222.rotateX(GTR(50));
+            c3.translateY(1.8);
+            c3.translateZ(-2.3);
+            c4.translateY(1.05);
+            c4.translateZ(-1.83);
+            c4.rotateX(GTR(50));
+            c5.translateY(.9);
+            c5.translateZ(.1);
+            c5.translateX(1);
+            c6.translateY(.9);
+            c6.translateZ(.1);
+            c6.translateX(-1);
+            cili1.translateY(.3);
+            cili1.translateZ(1.3);
+            cili1.rotateZ(GTR(90));
+            cili2.translateY(.3);
+            cili2.translateZ(-1.3);
+            cili2.rotateZ(GTR(90));
+            var c1CSG = new THREE.CSG.fromMesh(c1);
+            var c2CSG = new THREE.CSG.fromMesh(c2);
+            var c22CSG = new THREE.CSG.fromMesh(c22);
+            var c222CSG = new THREE.CSG.fromMesh(c222);
+            var c3CSG = new THREE.CSG.fromMesh(c3);
+            var c4CSG = new THREE.CSG.fromMesh(c4);
+            var c5CSG = new THREE.CSG.fromMesh(c5);
+            var c6CSG = new THREE.CSG.fromMesh(c6);
+            var cili1CSG = new THREE.CSG.fromMesh(cili1);
+            var cili2CSG = new THREE.CSG.fromMesh(cili2);
+            var operacionCarro = c1CSG.subtract(cili1CSG).subtract(c2CSG).subtract(cili2CSG).
+                subtract(c3CSG).subtract(c22CSG).subtract(c222CSG).union(c4CSG).union(c5CSG).
+                union(c6CSG);
+            var chasis = THREE.CSG.toMesh(operacionCarro);
+            chasis.applyMatrix(new THREE.Matrix4().makeScale(.7, .7, .7));
+
+            //Asignar material
+            c1.material = myMaterial1;
+            cili1.material = myMaterial2;
+
+            chasis.material = materialCarro;
+
+            //Agregar
+
+            //Agregar todo el carro a un grupo para poderlo mover
+            var group = new THREE.Group();
+            group.add(llanta1);
+            group.add(llanta2);
+            group.add(llanta3);
+            group.add(llanta4);
+            group.add(rines1);
+            group.add(rines2);
+            group.add(luz1);
+            group.add(luz2);
+            group.add(luzt1);
+            group.add(luzt2);
+            group.add(vidrio1);
+            group.add(vidrio2);
+            group.add(vidrio3);
+            group.add(vidrio4);
+            group.add(chasis);
+
+            scene.add(group);
+
+            group.applyMatrix(new THREE.Matrix4().makeScale(20, 20, 20));
+            group.applyMatrix(new THREE.Matrix4().makeTranslation(0, 2.3, 0));
+            group.rotateY(GTR(40));
+
+            camera.position.x = 0;
+            camera.position.y = 30;
+            camera.position.z = 100;
+
+        }
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+			//controls.enableRotate:false, 
+            render();
+        }
+        function render() {
+            renderer.render(scene, camera);
+        }
+    </script>
+</body>
+</html>
